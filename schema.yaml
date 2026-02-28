@@ -1,0 +1,33 @@
+tables:
+  - name: users
+    format: NEWLINE_DELIMITED_JSON
+    schema:
+      - name: user_id
+        type: STRING
+        mode: REQUIRED
+      - name: email
+        type: STRING
+        mode: NULLABLE
+      - name: profile
+        type: RECORD
+        mode: NULLABLE
+        fields:
+          - name: age
+            type: INTEGER
+            mode: NULLABLE
+          - name: city
+            type: STRING
+            mode: NULLABLE
+
+  - name: events
+    format: NEWLINE_DELIMITED_JSON
+    schema:
+      - name: event_id
+        type: STRING
+        mode: REQUIRED
+      - name: ts
+        type: TIMESTAMP
+        mode: REQUIRED
+      - name: payload
+        type: JSON
+        mode: NULLABLE
