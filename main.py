@@ -21,9 +21,7 @@ TABLES = cfg.get("tables", [])
 BQ = bigquery.Client()
 
 
-# -------------------------
-# Helpers
-# -------------------------
+
 def create_schema_from_yaml(table_schema):
     schema = []
     for col in table_schema:
@@ -131,14 +129,10 @@ def streaming(bucket: str, name: str):
         print("Error streaming file. Cause:\n%s" % traceback.format_exc())
 
 
-# -------------------------
-# Event Parsers
-# -------------------------
 def _extract_from_audit_log(event_json: dict):
     """
     For Eventarc delivering Audit Log based events (storage.objects.create),
-    bucket/object are usually in protoPayload.resourceName:
-      projects/_/buckets/<bucket>/objects/<object>
+    bucket/object are usually in protoPayload.resourceName
     """
     proto = event_json.get("protoPayload", {}) or {}
     rn = proto.get("resourceName", "") or ""
@@ -148,7 +142,7 @@ def _extract_from_audit_log(event_json: dict):
         obj = rn.split("/objects/")[1]
         return bucket, obj
 
-    # sometimes bucket in resource.labels
+
     resource = event_json.get("resource", {}) or {}
     labels = resource.get("labels", {}) or {}
     bucket = labels.get("bucket_name")
@@ -156,10 +150,7 @@ def _extract_from_audit_log(event_json: dict):
     return bucket, None
 
 
-# -------------------------
-# Entry point for YOUR setup: storage.objects.create
-# Eventarc delivers events as HTTP POST -> so use request handler
-# -------------------------
+
 @functions_framework.http
 def hello_auditlog(request):
     event_json = request.get_json(silent=True) or {}
@@ -183,9 +174,7 @@ def hello_auditlog(request):
     return ("OK", 200)
 
 
-# -------------------------
-# Optional: if you switch to google.cloud.storage.object.v1.finalized later
-# -------------------------
+
 @functions_framework.cloud_event
 def hello_gcs(cloud_event):
     data = cloud_event.data
